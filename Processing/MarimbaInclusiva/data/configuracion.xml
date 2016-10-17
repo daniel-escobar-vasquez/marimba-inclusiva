@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<configuracion>
+	<lapsoDesactivacionMouse/>15000<lapsoDesactivacionMouse/>
+	<numeroTablas>16</numeroTablas>
+	<anchoPantalla>1280</anchoPantalla>
+	<altoPantalla>720</altoPantalla>
+	<anchoMarimba>1260</anchoMarimba>
+	<altoTablaGrande>460</altoTablaGrande>
+	<altoTablaPequena>240</altoTablaPequena>
+	<posXMarimba>40</posXMarimba>
+	<posYMarimba>120</posYMarimba>
+	<colorTablaLibre>#222222</colorTablaLibre>
+	<colorTablaGolpeada>#8ABF47;</colorTablaGolpeada>
+	<colorTablaEquivocada>#C42531</colorTablaEquivocada>
+	<colorTablaConfiguracion>#AAAA00</colorTablaConfiguracion>
+	<colorTablaMouseSobre>#0000AA</colorTablaMouseSobre>
+	<colorTablaSeleccionada>#00AAAA</colorTablaSeleccionada>
+	<colorTablaSeleccionadaMousePresionado>#AA00AA</colorTablaSeleccionadaMousePresionado>
+	<colorInstruccion>#D6D6D6</colorInstruccion>
+	<colorOpcion>#50ACD1</colorOpcion>
+	<colorOpcionSeleccionada>#DBDB1F</colorOpcionSeleccionada>
+	<colorTeclaInactiva>#222222</colorTeclaInactiva>
+	<colorTeclaCuenta>#EFE930</colorTeclaCuenta>
+
+	<tablas>
+<!--		<tabla id="0" color="#FF0000" colorInactivo="#5F3739" >DO4</tabla>
+		<tabla id="1" color="#FFFF00" colorInactivo="#DFDDBF">RE4</tabla>
+		<tabla id="2" color="#E3FBFF" colorInactivo="#F4F4F4">MI4</tabla>
+		<tabla id="3" color="#AC1C02" colorInactivo="#5E3A34">FA4</tabla>
+		<tabla id="4" color="#FF6501" colorInactivo="#A67F66">SOL4</tabla>
+		<tabla id="5" color="#33CC33" colorInactivo="#85966E">LA4</tabla>
+		<tabla id="6" color="#0000FE" colorInactivo="#232323">SI4</tabla>
+		<tabla id="7" color="#FF0000" colorInactivo="#5F3739">DO5</tabla>
+		<tabla id="8" color="#FFFF00" colorInactivo="#DFDDBF">RE5</tabla>
+		<tabla id="9" color="#E3FBFF" colorInactivo="#F4F4F4">MI5</tabla>
+		<tabla id="10" color="#AC1C02" colorInactivo="#5E3A34">FA5</tabla>
+		<tabla id="11" color="#FF6501" colorInactivo="#A67F66">SOL5</tabla>
+		<tabla id="12" color="#33CC33" colorInactivo="#85966E">LA5</tabla>
+		<tabla id="13" color="#0000FE" colorInactivo="#232323">SI5</tabla>
+		<tabla id="14" color="#FF0000" colorInactivo="#5F3739">DO6</tabla>
+		<tabla id="15" color="#FFFF00" colorInactivo="#DFDDBF">RE6</tabla>
+-->	
+		<tabla id="0" color="#FF0000" colorInactivo="#7A3A3A" >DO4</tabla>
+		<tabla id="1" color="#FCA306" colorInactivo="#D4A859">RE4</tabla>
+		<tabla id="2" color="#FFFF00" colorInactivo="#EAEAAA">MI4</tabla>
+		<tabla id="3" color="#44AC33" colorInactivo="#708A6C">FA4</tabla>
+		<tabla id="4" color="#00A6AF" colorInactivo="#588184">SOL4</tabla>
+		<tabla id="5" color="#443B90" colorInactivo="#464459">LA4</tabla>
+		<tabla id="6" color="#C63A8E" colorInactivo="#755F6D">SI4</tabla>
+		<tabla id="7" color="#FF0000" colorInactivo="#7A3A3A">DO5</tabla>
+		<tabla id="8" color="#FCA306" colorInactivo="#D4A859">RE5</tabla>
+		<tabla id="9" color="#FFFF00" colorInactivo="#EAEAAA">MI5</tabla>
+		<tabla id="10" color="#44AC33" colorInactivo="#708A6C">FA5</tabla>
+		<tabla id="11" color="#00A6AF" colorInactivo="#588184">SOL5</tabla>
+		<tabla id="12" color="#443B90" colorInactivo="#464459">LA5</tabla>
+		<tabla id="13" color="#C63A8E" colorInactivo="#755F6D">SI5</tabla>
+		<tabla id="14" color="#FF0000" colorInactivo="#7A3A3A">DO6</tabla>
+		<tabla id="15" color="#FCA306" colorInactivo="#D4A859">RE6</tabla>
+
+
+	</tablas>
+
+	<secuencias>
+		<secuencia>
+		</secuencia>
+	</secuencias>
+
+</configuracion>
