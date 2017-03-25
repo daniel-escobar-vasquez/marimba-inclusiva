@@ -65,10 +65,10 @@ boolean usarArduino = false;
 Contiene todos los elementos configurables para adecuar las características de la marimba a la aplicación.
 Existen algunas particularidades a tomar en cuenta para realizar las modificaciones correctamente.
 
- 1. **Parámetros:** 
+#### 1. **Parámetros:** 
  Los elementos contenidos dentro de las etiquetas `<parametros></parametros>` se refieren a las dimensiones y posición en pantalla de la interfaz principalmente.
  
- **_Los Principales:_**
+  **_Los Principales:_**
 
 - `<numeroTablas>16</numeroTablas>`				Número de tablas que tiene la marimba.
 - `<anchoPantalla>1280</anchoPantalla>`			Ancho de pantalla (Para desplegar interfaz)
@@ -80,7 +80,7 @@ Existen algunas particularidades a tomar en cuenta para realizar las modificacio
 - `<posYMarimba>120</posYMarimba>`				Posición vertical de la interfaz marimba que se muestra en pantalla. La posición de la marimba es en el área superior izquierda.
 - `<puertoArduino>/dev/ttyACM0</puertoArduino>` Puerto por el cual se comunica el arduino.
 
- 2. **Tablas.**
+#### 2. **Tablas.**
  En la etiqueta `<tablas></tablas>` se pueden definir manualmente los tamaños, posiciones y colores de cada tabla si así se desea; en caso contrario, la aplicación genera la marimba con base a los parámetros descritos anteriormente.
  Al personalizar las tablas, los elementos `numeroTablas`, `anchoMarimba`, `altoTablaGrande`, `altoTablaPequena` definidos anteriormente no se toman en cuenta.
  
@@ -89,7 +89,7 @@ Existen algunas particularidades a tomar en cuenta para realizar las modificacio
   - `configuracionManual="0"`: No se toman en cuenta las tablas personalizadas. Se configuran automáticamente de acuerdo al ancho y alto de la marimba.
   - `configuracionManual="1"`: Se utiliza la configuración manual de las tablas descritas.
   
-  3. **Secuencias:**
+ #### 3. **Secuencias:**
   De forma similar a las tablas, se pueden crear secuencias personalizadas `<secuencias></secuencias>`, para habilitar/deshabilitar se usa también el atributo configuracionManual.
   - `configuracionManual="0"`: Carga las secuencias predefinidas en el programa (20 secuencias).
   - `configuracionManual="1"`: Carga las secuencias personalizadas del XML.
@@ -136,11 +136,11 @@ Otra opción es que se toquen varias notas a la vez -a manera de acorde-, para e
   A manera de ejemplo, se describe la siguiente estructura como una secuencia que utiliza corcheas, pero debido a los silencios entre cada nota, la melodía sería DO-RE-MI con el tiempo de una negra.
 ```  
  <secuencia nombre="secuencia1" figuraBase="2">	<!--Definición de secuencia valor de corchea como figura más pequeña-->
-    <nota>DO4</nota>			<!--Nota DO4-->
-    <nota></nota>				<!--Silencio de corchea-->
-    <nota>RE4</nota>			<!--Nota RE4-->
-    <nota></nota>				<!--Silencio de corchea-->
-    <nota>MI4</nota>			<!--Nota MI4-->
+    <nota>DO4</nota>	<!--Nota DO4-->
+    <nota></nota>	<!--Silencio de corchea-->
+    <nota>RE4</nota>	<!--Nota RE4-->
+    <nota></nota>	<!--Silencio de corchea-->
+    <nota>MI4</nota>	<!--Nota MI4-->
 </secuencia>
 ```
 
