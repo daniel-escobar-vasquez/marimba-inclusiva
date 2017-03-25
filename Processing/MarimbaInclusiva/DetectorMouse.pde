@@ -1,7 +1,9 @@
-// Marimba Didáctica
-// Abril/Mayo 2016
-// Daniel Escobar Vásquez  danielescobar.co
+// Marimba Inclusiva //<>//
+// Octubre 2016, Cartagena, Colombia
+// https://marimbainclusiva.wordpress.com/
+// https://github.com/marimba-inclusiva/marimba-inclusiva
 
+//Clase DetectorMouse
 class DetectorMouse
 {
   boolean mouseActivo;

@@ -1,7 +1,9 @@
-// Marimba Didáctica
-// Abril/Mayo 2016
-// Daniel Escobar Vásquez  danielescobar.co
+// Marimba Inclusiva
+// Octubre 2016, Cartagena, Colombia
+// https://marimbainclusiva.wordpress.com/
+// https://github.com/marimba-inclusiva/marimba-inclusiva
 
+//Clase Tabla, define y configura las propiedades de un objeto Tabla
 class Tabla
 {
   
@@ -20,17 +22,24 @@ class Tabla
   long cuentaSeleccionOpcion;
   String valorOpcionSeleccion;
   
-  /*nuevo*/
   color colorActual;
   color colorInactivo;
   color colorGolpe;
+
+  Tabla ( int numTab, color colorTabla)
+  {
+    estado = TablaEstados.LIBRE;
+    numeroTabla = numTab;
+    this.colorActual = colorTabla;
+    this.colorInactivo = colorTabla;
+  }  
   
   Tabla ( int numTab, color colorTabla, color colorInactivo)
   {
     estado = TablaEstados.LIBRE;
     numeroTabla = numTab;
     this.colorActual = colorTabla;
-    this.colorInactivo = colorTabla;//colorInactivo;
+    this.colorInactivo = colorInactivo;
   }
   
   void configurar ( int px , int py , int anc , int alt , int rot )

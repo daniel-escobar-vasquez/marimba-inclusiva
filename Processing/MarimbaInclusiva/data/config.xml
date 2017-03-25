@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<configuracion>
+
+	<parametros>
+		<lapsoDesactivacionMouse>5000</lapsoDesactivacionMouse>
+		<numeroTablas>16</numeroTablas>
+		<anchoPantalla>1280</anchoPantalla>
+		<altoPantalla>720</altoPantalla>
+		<anchoMarimba>880</anchoMarimba><!-- Sólo se toma en cuenta cuando es automático-->
+		<altoTablaGrande>460</altoTablaGrande>
+		<altoTablaPequena>265</altoTablaPequena>
+		<posXMarimba>25</posXMarimba>
+		<posYMarimba>120</posYMarimba>
+		<puertoArduino>/dev/ttyACM0</puertoArduino>
+		<colorTablaLibre>#222222</colorTablaLibre>
+		<colorTablaGolpeada>#8ABF47</colorTablaGolpeada>
+		<colorTablaEquivocada>#C42531</colorTablaEquivocada>
+		<colorTablaConfiguracion>#AAAA00</colorTablaConfiguracion>
+		<colorTablaMouseSobre>#0000AA</colorTablaMouseSobre>
+		<colorTablaSeleccionada>#00AAAA</colorTablaSeleccionada>
+		<colorTablaSeleccionadaMousePresionado>#AA00AA</colorTablaSeleccionadaMousePresionado>
+		<colorInstruccion>#D6D6D6</colorInstruccion>
+		<colorOpcion>#50ACD1</colorOpcion>
+		<colorOpcionSeleccionada>#DBDB1F</colorOpcionSeleccionada>
+		<colorTeclaInactiva>#222222</colorTeclaInactiva>
+		<colorTeclaCuenta>#EFE930</colorTeclaCuenta>
+	</parametros>
+	<tablas configuracionManual="1"> <!-- 1:Se utiliza la configuracion manual de las teclas descritas en el XML, 0: se configuran automaticamente de acuerdo al ancho y alto de la marimba-->
+		<tabla id="0" color="#FF0000" colorInactivo="#7A3A3A" px="0" py="0" ancho="62" alto="460" rotacion="0" >DO4</tabla>
+		<tabla id="1" color="#FCA306" colorInactivo="#D4A859" px="78" py="6" ancho="62" alto="447" rotacion="0">RE4</tabla>
+		<tabla id="2" color="#FFFF00" colorInactivo="#EAEAAA" px="156" py="13" ancho="62" alto="434" rotacion="0">MI4</tabla>
+		<tabla id="3" color="#44AC33" colorInactivo="#708A6C" px="234" py="19" ancho="62" alto="421" rotacion="0">FA4</tabla>
+		<tabla id="4" color="#00A6AF" colorInactivo="#588184" px="312" py="26" ancho="62" alto="408" rotacion="0">SOL4</tabla>
+		<tabla id="5" color="#443B90" colorInactivo="#464459" px="390" py="32" ancho="62" alto="395" rotacion="0">LA4</tabla>
+		<tabla id="6" color="#C63A8E" colorInactivo="#755F6D" px="468" py="39" ancho="62" alto="382" rotacion="0">SI4</tabla>
+		<tabla id="7" color="#FF0000" colorInactivo="#7A3A3A" px="546" py="45" ancho="62" alto="369" rotacion="0">DO5</tabla>
+		<tabla id="8" color="#FCA306" colorInactivo="#D4A859" px="624" py="52" ancho="62" alto="356" rotacion="0">RE5</tabla>
+		<tabla id="9" color="#FFFF00" colorInactivo="#EAEAAA" px="702" py="58" ancho="62" alto="343" rotacion="0">MI5</tabla>
+		<tabla id="10" color="#44AC33" colorInactivo="#708A6C" px="780" py="65" ancho="62" alto="330" rotacion="0">FA5</tabla>
+		<tabla id="11" color="#00A6AF" colorInactivo="#588184" px="858" py="71" ancho="62" alto="317" rotacion="0">SOL5</tabla>
+		<tabla id="12" color="#443B90" colorInactivo="#464459" px="936" py="78" ancho="62" alto="304" rotacion="0">LA5</tabla>
+		<tabla id="13" color="#C63A8E" colorInactivo="#755F6D" px="1014" py="84" ancho="60" alto="291" rotacion="0">SI5</tabla>
+		<tabla id="14" color="#FF0000" colorInactivo="#7A3A3A" px="1092" py="91" ancho="60" alto="278" rotacion="0">DO6</tabla>
+		<tabla id="15" color="#FCA306" colorInactivo="#D4A859" px="1170" py="97" ancho="60" alto="265" rotacion="0">RE6</tabla>
+	</tablas>
+
+	<secuencias configuracionManual="0"><!--1:Carga las secuencias del XML, 0:Carga las secuencias predefinidas en el programa -->
+		<secuencia nombre="secuencia1" figuraBase="2"><!--1:NEGRA 2:CORCHEA 3:SEMICORCHEA-->
+			<nota>DO4</nota>
+			<nota></nota><!--Silencio-->
+			<nota>RE4</nota>
+			<nota></nota>
+			<nota>MI4</nota>
+		</secuencia>
+		<secuencia nombre="secuencia2" figuraBase="2"><!--1:NEGRA 2:CORCHEA 3:SEMICORCHEA-->
+			<nota>FA4</nota>
+			<nota></nota>
+			<nota>FA4</nota>
+			<nota>FA4</nota>
+			<nota>FA4</nota>
+		</secuencia>		
+		<secuencia nombre="secuencia3" figuraBase="2" tempo="120">
+			<nota>FA5</nota>
+			<nota><!---->
+				<nota>FA5</nota>
+				<nota>LA5</nota>
+			</nota>
+			<nota></nota>
+			<nota>LA5</nota>
+			<nota>
+				<nota>DO5</nota>
+				<nota>FA5</nota>
+			</nota>
+			<nota></nota>
+			<nota>MI5</nota>
+			<nota>
+				<nota>MI5</nota>
+				<nota>SOL5</nota>
+			</nota>
+			<nota></nota>
+			<nota>SOL5</nota>
+			<nota>
+				<nota>DO5</nota>
+				<nota>SOL5</nota>
+			</nota>
+			<nota></nota>
+			<nota>FA5</nota>
+			<nota>
+				<nota>FA5</nota>
+				<nota>LA5</nota>
+			</nota>
+			<nota></nota>
+			<nota>LA5</nota>
+			<nota>
+				<nota>DO5</nota>
+				<nota>FA5</nota>
+			</nota>
+			<nota></nota>
+			<nota>MI5</nota>
+			<nota>
+				<nota>MI5</nota>
+				<nota>SOL5</nota>
+			</nota>
+			<nota></nota>
+			<nota>SOL5</nota>
+			<nota>
+				<nota>DO5</nota>
+				<nota>SOL5</nota>
+			</nota>
+		</secuencia>
+	</secuencias>
+	
+</configuracion>

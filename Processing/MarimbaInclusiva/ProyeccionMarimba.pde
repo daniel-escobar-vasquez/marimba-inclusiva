@@ -1,7 +1,9 @@
-// Marimba Didáctica //<>//
-// Abril/Mayo 2016
-// Daniel Escobar Vásquez  danielescobar.co
+// Marimba Inclusiva //<>//
+// Octubre 2016, Cartagena, Colombia
+// https://marimbainclusiva.wordpress.com/
+// https://github.com/marimba-inclusiva/marimba-inclusiva
 
+//Clase ProyeccionMarimba, controla la visualización de marimba
 class ProyeccionMarimba
 {
   int estado;
@@ -16,8 +18,6 @@ class ProyeccionMarimba
   
   PFont fuente;
   
-  
-  
   //CONSTRUCTOR DE LA CLASE
   ProyeccionMarimba ( Marimba marimba, Configuracion configuracion )
   {
@@ -26,9 +26,7 @@ class ProyeccionMarimba
     this.configuracion = configuracion;
     
     utiles = new Utiles ( );
-    
     fuente = loadFont ("Garamond-Bold-28.vlw");
-
     textFont(fuente,28);
   }
   
@@ -39,8 +37,6 @@ class ProyeccionMarimba
     switch ( estado )
     {
       case ProyeccionMarimbaEstados.INICIO:
-        //irAModoEjecucion ( );        
-        //estado =  ProyeccionMarimbaEstados.EJECUCION;
       break;
       
       case ProyeccionMarimbaEstados.LIBRE:
@@ -73,10 +69,8 @@ class ProyeccionMarimba
   void irAModoJuego ( )
   {
     estado = ProyeccionMarimbaEstados.JUEGO;
-    //SJM
-    //configurarTablas ( TablaEstados.LIBRE , configuracion.colorTablaLibre );
-    for(int i=0;i<16;i++){
-      configurarTabla(i,TablaEstados.LIBRE, marimba.arregloTablas[i].colorActual);
+    for(int i=1;i<=configuracion.numeroTablas;i++){
+      configurarTabla(i,TablaEstados.LIBRE, marimba.arregloTablas[i-1].colorActual);
     }
     seleccionRealizada = false;
   }
@@ -84,10 +78,8 @@ class ProyeccionMarimba
   void irAModoLibre ( )
   {
     estado = ProyeccionMarimbaEstados.LIBRE;
-    //SJM
-//    configurarTablas ( TablaEstados.LIBRE , configuracion.colorTablaLibre );
-    for(int i=0;i<16;i++){
-      configurarTabla2(i,TablaEstados.LIBRE, marimba.arregloTablas[i].colorInactivo);
+    for(int i=1;i<=configuracion.numeroTablas;i++){
+      configurarTabla(i,TablaEstados.LIBRE, marimba.arregloTablas[i-1].colorInactivo);
     }
     seleccionRealizada = false;
   }
@@ -98,29 +90,41 @@ class ProyeccionMarimba
     instruccionActual = instr;
     estado = ProyeccionMarimbaEstados.INSTRUCCION;
     instruccionActual.iniciar ( );
-    configurarTablas ( TablaEstados.INSTRUCCION , configuracion.colorInstruccion );
+    for(int i=1;i<=configuracion.numeroTablas;i++){
+      configurarTabla(i,TablaEstados.PRESENTACION_SECUENCIA, marimba.arregloTablas[i-1].colorInactivo);
+    }
     seleccionRealizada = false;
   }
+  
+  //IR AL ESTADO RESULTADO
+  void irAModoResultado ( Instruccion instr )
+  {
+    instruccionActual = instr;
+    estado = ProyeccionMarimbaEstados.INSTRUCCION;
+    instruccionActual.iniciar ( );
+    configurarTablas ( TablaEstados.INSTRUCCION , configuracion.colorInstruccion );
+    seleccionRealizada = false;
+  }  
+  
   
   //IR AL ESTADO PRESENTACIÓN SECUENCIA
   void irAModoPresentacionSecuencia ( )
   {
     estado = ProyeccionMarimbaEstados.PRESENTACION_SECUENCIA; //<>//
-    //sjm
-    //configurarTablas ( TablaEstados.PRESENTACION_SECUENCIA , col /*configuracion.colorTeclaInactiva*/ );
-    for(int i=0;i<16;i++){
-      configurarTabla2(i,TablaEstados.PRESENTACION_SECUENCIA, marimba.arregloTablas[i].colorInactivo);
+    for(int i=1;i<=configuracion.numeroTablas;i++){
+      configurarTabla(i,TablaEstados.PRESENTACION_SECUENCIA, marimba.arregloTablas[i-1].colorInactivo);
     }
   }
+  
+  
+  
   
   //IR AL MODO REPETICIÓN SECUENCIA
   void irAModoRepeticionSecuencia ( )
   {
     estado = ProyeccionMarimbaEstados.REPETICION_SECUENCIA;
-    //sjmm
-    //configurarTablas ( TablaEstados.LIBRE , configuracion.colorTablaLibre );
-    for(int i=0;i<16;i++){
-      configurarTabla2(i,TablaEstados.LIBRE, marimba.arregloTablas[i].colorInactivo);
+    for(int i=1;i<=configuracion.numeroTablas;i++){
+      configurarTabla(i,TablaEstados.LIBRE, marimba.arregloTablas[i-1].colorInactivo);
     }    
   }
   
@@ -132,7 +136,6 @@ class ProyeccionMarimba
     configurarTablas ( TablaEstados.CONFIGURACION , configuracion.colorTablaConfiguracion );
   }
   
-
   
   
   //CONFIGURAR TODAS LAS TABLAS CON UN ESTADO Y UN COLOR
@@ -150,12 +153,6 @@ class ProyeccionMarimba
   {
     marimba.arregloTablas [ tabla - 1 ].estado = estado;
     marimba.arregloTablas [ tabla - 1 ].colorTabla = col;
-  }
-  //CONFIGURAR UNA SOLA TABLA CON UN ESTADO Y UN COLOR
-  void configurarTabla2 ( int tabla , int estado , color col )
-  {
-    marimba.arregloTablas [ tabla ].estado = estado;
-    marimba.arregloTablas [ tabla ].colorTabla = col;
   }
  
   //ACTUALIZAR TODAS LAS TABLAS SEGÚN SU ESTADO Y LA ACTIVIDAD DEL MOUSE.
@@ -201,7 +198,6 @@ class ProyeccionMarimba
               marimba.arregloTablas [ i ].colorTabla = configuracion.colorTablaMouseSobre;
               println ( "MOUSESOBRE" );
             }
-            //marimba.arregloTablas [ i ].colorTabla = configuracion.colorTablaLibre;
 
            
          break;
@@ -304,21 +300,13 @@ class ProyeccionMarimba
   }
   
   void setGradiente(int posX, int posY, float ancho, float alto, color color1, color color2) {
-  
-    //noFill();
-  
-      //for (int i = posY; i <= posY+alto; i++) {
-        //float inter = map(i, posY, posY+alto, 0, 1);
         color c = lerpColor(color1, color2, 0.5);
         stroke(c);
-        //line(posX, i, posX+ancho, i);
-        //fill ( c );
-        rect ( posX , posY, ancho , alto);        
-      //}
-  }    
+        rect ( posX , posY, ancho , alto);
+  }
   
-  //DIBUJAR TODAS LA TABLAS
-  void dibujarTablas ( )
+ //DIBUJAR TODAS LA TABLAS
+ void dibujarTablas ( )
   {
     for ( int i = 0 ; i < configuracion.numeroTablas ; i++ )
     {
@@ -330,54 +318,13 @@ class ProyeccionMarimba
   //DIBUJAR UN MENSAJE EN LAS POSICIONES DE LAS TABLAS
   void dibujarInstruccion ( )
   {
-    textSize(35);
-    fill(0);
-    textAlign(CENTER);
-    
-    
-    
-    //SI LA INSTRUCCIÓN DEBE PARTIRSE EN VARIAS LÍNEAS
-//    if ( instruccionActual.partirInstruccion )
-//    {
-      String[] palabras = split ( instruccionActual.mensaje , ';');
+      //Imagen de instrucción
+      fill(0);
       PImage imgInst = instruccionActual.iconoInstruccion;
       if(imgInst!=null){
         fill(0);
-        image(imgInst, configuracion.posXMarimba+(configuracion.anchoMarimba*0.23), configuracion.posYMarimba+(configuracion.altoTablaPequena/2), imgInst.width/5,imgInst.height/5);      
+        image(imgInst, (int)(configuracion.posXMarimba+(configuracion.anchoMarimba*0.5)-(imgInst.width*0.5)), (int)(marimba.arregloTablas[0].posY + (configuracion.altoTablaGrande*0.44)), imgInst.width,imgInst.height);      
       }
-      
-//      if ( palabras.length > 0 )
-//      {
-//        for ( int j = 0; j < palabras.length ; j ++ )
-//        {
-//          for ( int k = 0 ; k < palabras [ j ].length ( ) ; k++ )
-//          {
-//            if ( k < configuracion.numeroTablas )
-//            {
-//              int posx = configuracion.posXMarimba + marimba.arregloTablas [ k ].posX + 30 ;
-//              int posy = configuracion.posYMarimba + marimba.arregloTablas [ k ].posY + int ( marimba.arregloTablas [ k ].alto * 0.5 +  (35 * j) - ( 15 * ( palabras.length - 1 ) )  ) + 5;
-              
-//              text( palabras [ j ].charAt (k) , posx , posy );
-//            }
-//          }
-//        }
-//      }
-//    }
-    
-    //SI LA INSTRUCCIÓN SE DIBUJA EN UNA SOLA LÍNEA
-//    else
-//    {  
-//      for ( int i = 0 ; i < instruccionActual.mensaje.length ( ) ; i++ )
-//      {
-//        if ( i < configuracion.numeroTablas )
-//        {
-//          int posx = configuracion.posXMarimba + marimba.arregloTablas [ i ].posX +  30;
-//          int posy = configuracion.posYMarimba + marimba.arregloTablas [ i ].posY + int ( marimba.arregloTablas [ i ].alto * 0.5 ) + 5;
-          
-//          text( instruccionActual.mensaje.charAt(i) , posx , posy );
-//        }
-//      }
-//    }
  
     //SI LA INSTRUCCIÓN TIENE OPCIONES DE SELECCIÓN
     if ( instruccionActual.seleccion )
@@ -386,21 +333,14 @@ class ProyeccionMarimba
       {
         configurarTabla ( instruccionActual.seleccionTabla.get ( h ) , TablaEstados.OPCION_SELECCION , configuracion.colorOpcion );
         marimba.arregloTablas [ instruccionActual.seleccionTabla.get ( h ) - 1 ].valorOpcionSeleccion = instruccionActual.seleccionMensaje.get ( h );
-        //-Dibujar el texto de la opción.
-        
-        int x = configuracion.posXMarimba + marimba.arregloTablas [ instruccionActual.seleccionTabla.get ( h ) - 1 ].posX + 5;
-        int y = configuracion.posYMarimba + 200;
-        
-        //DIBUJAR LAS PALABRAS VERTICALES DE LAS OPCIONES
+       
+        //Imagen de instrucción por cada tabla
         fill(0);
         PImage img = instruccionActual.seleccionIcono.get ( h );
-        image(img, x, y, img.width/5,img.height/5);
+        int x = configuracion.posXMarimba + marimba.arregloTablas [ instruccionActual.seleccionTabla.get ( h ) - 1 ].posX;
+        int y = configuracion.posYMarimba + marimba.arregloTablas [ 15 ].posY + int ( marimba.arregloTablas [ 15 ].alto * 0.5  - marimba.arregloTablas [ instruccionActual.seleccionTabla.get ( h ) - 1 ].ancho*0.5);        
         
-/*        for ( int f = 0 ; f < instruccionActual.seleccionMensaje.get ( h ).length ( ) ; f ++)
-        {
-           text( instruccionActual.seleccionMensaje.get ( h ).charAt(f) , x , y + f*32 );
-        }
-*/
+        image(img, x, y, marimba.arregloTablas [ instruccionActual.seleccionTabla.get ( h ) - 1 ].ancho, marimba.arregloTablas [ instruccionActual.seleccionTabla.get ( h ) - 1 ].ancho);
       }
     }
   }
@@ -467,7 +407,6 @@ class ProyeccionMarimba
   //GOLPEAR UNA TABLA QUE TENGA OPCIÓN DE SELECCIÓN
   void seleccionarOpcionTabla ( int tabla )
   {
-    println ( "aaa" );
     if ( tabla > 0 && tabla <= marimba.numeroTablas )
     {
       marimba.tablaOpcionSeleccionada = tabla;
@@ -483,11 +422,8 @@ class ProyeccionMarimba
     if ( tabla > 0 && tabla <= marimba.numeroTablas )
     {
       marimba.arregloTablas [ tabla - 1 ].estado = TablaEstados.GOLPEADA;
-      //SJM
       color blanco = #FFFFFF;
-      marimba.arregloTablas [ tabla - 1 ].colorTabla = blanco;//marimba.arregloTablas [ tabla - 1 ].colorActual;//configuracion.colorTablaGolpeada;
-      //color negro = #000000;
-      //setGradiente(marimba.arregloTablas [ tabla - 1 ].posX + configuracion.posXMarimba , marimba.arregloTablas [ tabla - 1 ].posY + configuracion.posYMarimba , marimba.arregloTablas [ tabla - 1 ].ancho , marimba.arregloTablas [ tabla - 1 ].alto, negro,marimba.arregloTablas [ tabla - 1 ].colorActual);
+      marimba.arregloTablas [ tabla - 1 ].colorTabla = blanco;
       marimba.arregloTablas [ tabla - 1 ].cuentaGolpe = millis ( );
       
       tablaGolpeada = true;
@@ -527,7 +463,6 @@ class ProyeccionMarimba
     if ( tabla > 0 && tabla <= marimba.numeroTablas )
     {
       marimba.arregloTablas [ tabla - 1 ].estado = TablaEstados.LIBRE;
-      //sjm
       marimba.arregloTablas [ tabla - 1 ].colorTabla = marimba.arregloTablas [ tabla - 1 ].colorInactivo;//configuracion.colorTablaLibre;
     }
   }

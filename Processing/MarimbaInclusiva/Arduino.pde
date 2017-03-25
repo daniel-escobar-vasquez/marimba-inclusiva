@@ -1,7 +1,9 @@
-// Marimba Didáctica
-// Abril/Mayo 2016
-// Daniel Escobar Vásquez  danielescobar.co
+// Marimba Inclusiva //<>//
+// Octubre 2016, Cartagena, Colombia
+// https://marimbainclusiva.wordpress.com/
+// https://github.com/marimba-inclusiva/marimba-inclusiva
 
+//Clase Arduino, realiza la conexión a Arduino
 class Arduino
 {
   Serial myPort;
@@ -11,7 +13,7 @@ class Arduino
   {
     this.activo = activo;
     if ( activo )
-    myPort = new Serial( parent , puerto , 9600);
+    myPort = new Serial( parent , puerto , 9600);//
   }
   
   int leerPuerto ( )
@@ -36,8 +38,8 @@ class Arduino
     }
   }
   
- void escribirPuerto()
- {
-     myPort.write(1);
- }
+   void escribirPuerto()
+   {
+       myPort.write(1);
+   }
 }
