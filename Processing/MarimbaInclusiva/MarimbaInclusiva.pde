@@ -1,9 +1,12 @@
-// Marimba Didáctica
-// Abril/Mayo 2016
-// Daniel Escobar Vásquez  danielescobar.co
+// Marimba Inclusiva //<>//
+// Octubre 2016, Cartagena, Colombia
+// https://marimbainclusiva.wordpress.com/
+// https://github.com/marimba-inclusiva/marimba-inclusiva
 
 import processing.serial.*;
-import ddf.minim.*;
+import beads.*;
+import java.util.Arrays; 
+import java.util.Map;
 
 int estado;
 int siguienteEstado;
@@ -20,15 +23,14 @@ SecuenciaComparador secuenciaComparador;
 Arduino arduino;
 Sonidos sonidos;
 LapsoEspera lapsoEspera;
-boolean simularMarimbaConMouse = true;
-boolean usarArduino = false;
+boolean simularMarimbaConMouse = true; //Habilita uso de mouse
+boolean usarArduino = false; //Habilita conexion con Arduino
 
 void setup ( )
 {
   size ( 1280 , 720 );
   noStroke();
-  
-  estado = MarimbaInclusivaEstados.INICIO;
+  estado = MarimbaInclusivaEstados.INICIO; //Estado inicial
 }
 
 void draw ( )
@@ -37,28 +39,30 @@ void draw ( )
   correrEstados ( );
 }
 
+// Inicio Maquina de Estados
 void correrEstados ( )
 {
   int golpe;
   
   switch ( estado )
   {
-    case MarimbaInclusivaEstados.INICIO:
-      configuracion = new Configuracion ( "configuracion.xml" );
-      marimba = new Marimba ( configuracion.numeroTablas , null , configuracion.anchoMarimba , configuracion.altoTablaGrande , configuracion.altoTablaPequena, configuracion.tablas);
+    case MarimbaInclusivaEstados.INICIO: //Inicializa todos los objetos y carga la configuración guardada en XML
+      configuracion = new Configuracion ( "config.xml" );
+      marimba = new Marimba ( configuracion.numeroTablas , configuracion.anchoMarimba , configuracion.altoTablaGrande , configuracion.altoTablaPequena, configuracion.arregloTablas);
       utiles = new Utiles ( );
       proyeccionMarimba = new ProyeccionMarimba ( marimba , configuracion );
       detectorMouse = new DetectorMouse ( configuracion.lapsoDesactivacionMouse );
       instruccionesLista = new InstruccionesLista ( );
-      secuenciasLista = new SecuenciasLista ( );
+      secuenciasLista = configuracion.secuenciaManual? new SecuenciasLista(configuracion.listaSecuencias) : new SecuenciasLista();//Carga lista de secuencias manual o default
       secuenciador = new Secuenciador ( );
       secuenciaComparador = new SecuenciaComparador ( );
-      arduino = new Arduino ( this, "/dev/ttyACM0" , usarArduino );
+      arduino = new Arduino ( this, configuracion.puertoArduino , usarArduino );
       sonidos = new Sonidos ( this );
       lapsoEspera = new LapsoEspera ( );
-      
-      estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-      proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
+      estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
+      arduino.limpiarPuerto ( );
+      proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
+
     break;
     
     case MarimbaInclusivaEstados.ESPERA:
@@ -86,7 +90,7 @@ void correrEstados ( )
     case MarimbaInclusivaEstados.CONFIGURACION_TABLA:
     break;
 
-    case MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO:
+    case MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO: //Estado inicial de proyeccion
       proyeccionMarimba.actualizarProyeccion ( );
       if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
       {
@@ -96,9 +100,8 @@ void correrEstados ( )
       }
     break;
     
-    case MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO:
+    case MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO: //Estado de menu (seleccion modo libre-juego)
       proyeccionMarimba.actualizarProyeccion ( );
-      
       
       if ( lapsoEspera.esperando )
       {
@@ -114,47 +117,25 @@ void correrEstados ( )
               
               case OpcionesSeleccion.JUEGO:
                 println ( "MODO JUEGO SELECCIONADO" );
-                estado = MarimbaInclusivaEstados.INSTRUCCION_MODO_JUEGO;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionModoJuego );
+                estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
+                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
                 secuenciasLista.indiceLista = 0;
                 secuenciasLista.listaCompletada = false;
               break;
-              case OpcionesSeleccion.EXTRA:
-                println ( "MODO EXTRA SELECCIONADO" );
-                estado = MarimbaInclusivaEstados.INSTRUCCION_MODO_JUEGO;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionModoJuego );
-                secuenciasLista.indiceLista = 19;
-                secuenciasLista.listaCompletada = false;
-              break;              
-              
             }
         }
       }
       else
       {
-      
-        if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
-        {
-            estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-            proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
-        }
-        else
-        {
           golpe = arduino.leerPuerto ( );
           if ( golpe != 0 )
           {
             switch (golpe)
             {
-              case 14:
-                proyeccionMarimba.seleccionRealizada = true;
-                proyeccionMarimba.valorSeleccionRealizada = OpcionesSeleccion.LIBRE;
-              break;
-              
               case 15:
                 proyeccionMarimba.seleccionRealizada = true;
-                proyeccionMarimba.valorSeleccionRealizada = OpcionesSeleccion.JUEGO;
-              break;
-              
+                proyeccionMarimba.valorSeleccionRealizada = OpcionesSeleccion.LIBRE;
+              break;              
               case 16:
                 proyeccionMarimba.seleccionRealizada = true;
                 proyeccionMarimba.valorSeleccionRealizada = OpcionesSeleccion.JUEGO;
@@ -167,36 +148,18 @@ void correrEstados ( )
             switch ( proyeccionMarimba.valorSeleccionRealizada )
             {
               case OpcionesSeleccion.LIBRE:
-                //println ( "MODO LIBRE SELECCIONADO" );
-                /*estado = MarimbaInclusivaEstados.INSTRUCCION_TOCAR_LIBRE;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionTocarLibre );*/
                 lapsoEspera.iniciarEspera ( 500 );
               break;
               
               case OpcionesSeleccion.JUEGO:
-                //println ( "MODO JUEGO SELECCIONADO" );
-                /*estado = MarimbaInclusivaEstados.INSTRUCCION_MODO_JUEGO;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionModoJuego );
-                secuenciasLista.indiceLista = 0;
-                secuenciasLista.listaCompletada = false;*/
                 lapsoEspera.iniciarEspera ( 500 );
               break;
-              case OpcionesSeleccion.EXTRA:
-                //println ( "MODO JUEGO SELECCIONADO" );
-                /*estado = MarimbaInclusivaEstados.INSTRUCCION_MODO_JUEGO;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionModoJuego );
-                secuenciasLista.indiceLista = 0;
-                secuenciasLista.listaCompletada = false;*/
-                lapsoEspera.iniciarEspera ( 500 );
-              break;
-              
             }
           }
-        }
       }
      break;
     
-    case MarimbaInclusivaEstados.MODO_LIBRE:
+    case MarimbaInclusivaEstados.MODO_LIBRE: /*Estado de modo libre*/
       proyeccionMarimba.actualizarProyeccion ( );
       
       golpe = arduino.leerPuerto ( );
@@ -231,39 +194,8 @@ void correrEstados ( )
       }
     break;
     
-    
-    /*
-    case MarimbaInclusivaEstados.INSTRUCCION_REGRESAR_MENU:
-      proyeccionMarimba.actualizarProyeccion ( );
-      if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
-      {
-          //estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-          //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
-      }
-      else {
-        if ( proyeccionMarimba.seleccionRealizada )
-        {
-          switch ( proyeccionMarimba.valorSeleccionRealizada )
-          {
-            case OpcionesSeleccion.MENU:
-              println ( "MODO LIBRE SELECCIONADO" );
-              estado = MarimbaInclusivaEstados.INSTRUCCION_TOCAR_LIBRE;
-              proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionTocarLibre );
-            break;
-          }
-        }
-      }
-     break;
-    */
-    
-    
     case MarimbaInclusivaEstados.INSTRUCCION_MODO_JUEGO:
-      proyeccionMarimba.actualizarProyeccion ( );
-      if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
-      {
-          estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
-          proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
-      }
+
     break;
     
     case MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA:
@@ -277,7 +209,7 @@ void correrEstados ( )
       }
     break;
     
-    case MarimbaInclusivaEstados.INSTRUCCION_REPETIR_SECUENCIA:
+    case MarimbaInclusivaEstados.INSTRUCCION_REPETIR_SECUENCIA: /*Estado intentar de nuevo*/
       proyeccionMarimba.actualizarProyeccion ( );
       if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
       {
@@ -291,7 +223,7 @@ void correrEstados ( )
       
     break;
     
-    case MarimbaInclusivaEstados.INSTRUCCION_INTENTAR_NUEVAMENTE_O_TERMINAR:
+    case MarimbaInclusivaEstados.INSTRUCCION_INTENTAR_NUEVAMENTE_O_TERMINAR: /*Estado intentar nuevamente-continuar*/
       proyeccionMarimba.actualizarProyeccion ( );
       
       if ( lapsoEspera.esperando )
@@ -308,8 +240,9 @@ void correrEstados ( )
               
               case OpcionesSeleccion.SALIR:
                 println ( "SELECCIÓN TERMINAR JUEGO" );
-                estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
+                estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
+                arduino.limpiarPuerto ( );
+                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
               break;
             }
         }
@@ -346,16 +279,10 @@ void correrEstados ( )
             switch ( proyeccionMarimba.valorSeleccionRealizada )
             {
               case OpcionesSeleccion.INTENTAR:
-                /*println ( "SELECCIÓN INTENTAR DE NUEVO" );
-                estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );*/
                 lapsoEspera.iniciarEspera ( 500 );
               break;
               
               case OpcionesSeleccion.SALIR:
-                /*println ( "SELECCIÓN TERMINAR JUEGO" );
-                estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );*/
                 lapsoEspera.iniciarEspera ( 500 );
               break;
             }
@@ -366,13 +293,14 @@ void correrEstados ( )
       
     break;
 
-    case MarimbaInclusivaEstados.INSTRUCCION_SECUENCIA_LOGRADA:
+    case MarimbaInclusivaEstados.INSTRUCCION_SECUENCIA_LOGRADA: /*Estado finalizar*/
       proyeccionMarimba.actualizarProyeccion ( );
       
       if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
       {
-         estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-         proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
+          estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
+          arduino.limpiarPuerto ( );
+          proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );        
       }
       else
       {
@@ -461,19 +389,23 @@ void correrEstados ( )
         int[ ] acorde = secuenciador.obtenerAcordeActual ( );
         if ( acorde == null )
         {
-          estado = MarimbaInclusivaEstados.INSTRUCCION_REPETIR_SECUENCIA;
-          proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionRepetirSecuencia );
-          println ( "MODO INSTRUCCIÓN REPETIR SECUENCIA" );
+         estado = MarimbaInclusivaEstados.LECTURA_SECUENCIA;
+         proyeccionMarimba.irAModoRepeticionSecuencia ( );
+         arduino.limpiarPuerto ( );
+         secuenciaComparador.definirSecuencia ( secuenciasLista.obtenerSecuencia ( ) );
+         proyeccionMarimba.tablaGolpeada = false;
+         println ( "MODO REPETICION SECUENCIA" );
         }
         else
         {
-          //manda señal arduino
+          //Envia señal a Arduino
           proyeccionMarimba.golpearAcorde ( acorde);
-          sonidos.reproducirAcorde ( acorde );
+          
           if(usarArduino){
-            println("ESCRIBE SERIAL ARDUINO");
+            println("Escribe Serial Arduino");
             arduino.escribirPuerto();
           }
+          sonidos.reproducirAcorde ( acorde );
         }
       }
     
@@ -489,7 +421,7 @@ void correrEstados ( )
         {
           println ( "LAPSO ESPERA TERMINADA" );
           estado = MarimbaInclusivaEstados.INSTRUCCION_SECUENCIA_LOGRADA;
-          proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSecuenciaLograda );
+          proyeccionMarimba.irAModoResultado ( instruccionesLista.instruccionSecuenciaLograda );
           arduino.limpiarPuerto ( );
         }
       }
@@ -501,8 +433,6 @@ void correrEstados ( )
         {
           println("ARDUINO TABLA : " + golperepeticion );
           proyeccionMarimba.golpearTabla (golperepeticion);
-          //proyeccionMarimba.fallarTabla ( golperepeticion );
-          
           
           if ( simularMarimbaConMouse )
           {
@@ -536,24 +466,18 @@ void correrEstados ( )
             estado = MarimbaInclusivaEstados.INSTRUCCION_INTENTAR_NUEVAMENTE_O_TERMINAR;
             arduino.limpiarPuerto ( );
             proyeccionMarimba.seleccionRealizada = false;
-            proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionIntentarNuevamente );
+            proyeccionMarimba.irAModoResultado ( instruccionesLista.instruccionIntentarNuevamente );
             println ( "MODO INSTRUCCIÓN INTENTAR NUEVAMENTE" );
           }
         }
       }
-      
-      /*if ( !detectorMouse.obtenerActivacion ( ) && simularMarimbaConMouse )
-      {          
-          estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
-          arduino.limpiarPuerto ( );
-          proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
-      }*/
+
     break;
     
   }
 }
 
-void keyPressed(){
+void keyPressed(){ //Tecla Q/q de reinicio
   if (key == 'q' || key == 'Q') {
         estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
         proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );

@@ -1,7 +1,9 @@
-// Marimba Didáctica
-// Abril/Mayo 2016
-// Daniel Escobar Vásquez  danielescobar.co
+// Marimba Inclusiva
+// Octubre 2016, Cartagena, Colombia
+// https://marimbainclusiva.wordpress.com/
+// https://github.com/marimba-inclusiva/marimba-inclusiva
 
+//Clase Secuenciador
 class Secuenciador
 {
   Secuencia secuenciaActual;
@@ -51,7 +53,7 @@ class Secuenciador
   {
     //float tmpDiv = 60 / float ( secuenciaActual.tempo
     duracionSubdivision = ( 60.0 / secuenciaActual.tempo) * secuenciaActual.division * 1000;
-    println ( "DURACIÓN SUBDIVISIÓN : " + duracionSubdivision );
+    //println ( "DURACIÓN SUBDIVISIÓN : " + duracionSubdivision );
     secuenciaActual.completada = false;
     secuenciaActual.indiceMelodia = 0;
   }
