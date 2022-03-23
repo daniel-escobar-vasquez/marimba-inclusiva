@@ -6,12 +6,12 @@
 		<numeroTablas>16</numeroTablas>
 		<anchoPantalla>1280</anchoPantalla>
 		<altoPantalla>720</altoPantalla>
-		<anchoMarimba>880</anchoMarimba><!-- Sólo se toma en cuenta cuando es automático-->
-		<altoTablaGrande>460</altoTablaGrande>
-		<altoTablaPequena>265</altoTablaPequena>
-		<posXMarimba>25</posXMarimba>
-		<posYMarimba>120</posYMarimba>
-		<puertoArduino>/dev/ttyACM0</puertoArduino>
+		<anchoMarimba>800</anchoMarimba><!-- Sólo se toma en cuenta cuando es automático-->
+		<altoTablaGrande>360</altoTablaGrande>
+		<altoTablaPequena>215</altoTablaPequena>
+		<posXMarimba>275</posXMarimba>
+		<posYMarimba>180</posYMarimba>
+		<puertoArduino>/dev/cu.usbmodem14301</puertoArduino>
 		<colorTablaLibre>#222222</colorTablaLibre>
 		<colorTablaGolpeada>#8ABF47</colorTablaGolpeada>
 		<colorTablaEquivocada>#C42531</colorTablaEquivocada>
@@ -25,7 +25,7 @@
 		<colorTeclaInactiva>#222222</colorTeclaInactiva>
 		<colorTeclaCuenta>#EFE930</colorTeclaCuenta>
 	</parametros>
-	<tablas configuracionManual="1"> <!-- 1:Se utiliza la configuracion manual de las teclas descritas en el XML, 0: se configuran automaticamente de acuerdo al ancho y alto de la marimba-->
+	<tablas configuracionManual="0"> <!-- 1:Se utiliza la configuracion manual de las teclas descritas en el XML, 0: se configuran automaticamente de acuerdo al ancho y alto de la marimba-->
 		<tabla id="0" color="#FF0000" colorInactivo="#7A3A3A" px="0" py="0" ancho="62" alto="460" rotacion="0" >DO4</tabla>
 		<tabla id="1" color="#FCA306" colorInactivo="#D4A859" px="78" py="6" ancho="62" alto="447" rotacion="0">RE4</tabla>
 		<tabla id="2" color="#FFFF00" colorInactivo="#EAEAAA" px="156" py="13" ancho="62" alto="434" rotacion="0">MI4</tabla>
