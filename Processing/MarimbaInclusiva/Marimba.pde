@@ -1,4 +1,4 @@
-// Marimba Inclusiva //<>//
+// Marimba Inclusiva //<>// //<>// //<>// //<>//
 // Octubre 2016, Cartagena, Colombia
 // https://marimbainclusiva.wordpress.com/
 // https://github.com/marimba-inclusiva/marimba-inclusiva
@@ -76,7 +76,7 @@ class Marimba
     
     for ( int i = 0 ; i < numeroTablas ; i++ )
     {
-        int j = i%7; //<>// //<>// //<>//
+        int j = i%7; //<>// //<>// //<>// //<>// //<>// //<>//
         arregloTablas [ i ] = new Tabla ( i + 1, colores[j],colores[j]);
     }
   }

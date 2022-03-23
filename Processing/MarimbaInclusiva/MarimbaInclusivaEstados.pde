@@ -1,4 +1,4 @@
-// Marimba Inclusiva //<>//
+// Marimba Inclusiva //<>// //<>// //<>// //<>//
 // Octubre 2016, Cartagena, Colombia
 // https://marimbainclusiva.wordpress.com/
 // https://github.com/marimba-inclusiva/marimba-inclusiva
@@ -29,4 +29,8 @@ class MarimbaInclusivaEstados
   static final int LECTURA_SECUENCIA = 21;
   static final int TRANSICION_1 = 22;
   static final int PRESENTACION_SECUENCIA_EXTRA = 23;
+  static final int IMAGEN_LOGO = 24;
+  static final int MENSAJE_PRINCIPAL = 25;
+  static final int MENSAJE_SECUENCIA = 26;
+  static final int PAUSA_INICIO_PRESENTACION_SECUENCIA = 27;
 }
