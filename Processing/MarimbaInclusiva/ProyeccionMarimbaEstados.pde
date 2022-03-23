@@ -14,4 +14,6 @@ class ProyeccionMarimbaEstados
   static final int INSTRUCCION = 6;
   static final int PRESENTACION_SECUENCIA = 7;
   static final int REPETICION_SECUENCIA = 7;
+  static final int MOSTRAR_IMAGEN = 9;
+  static final int MOSTRAR_MENSAJE = 10;
 }
