@@ -16,6 +16,24 @@ class SecuenciasLista
   boolean listaCompletada = false;
   
   /*Nuevos*/
+  Secuencia secuenciaIntro01 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuenciaIntro02 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia01 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia02 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia03 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia04 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia05 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia06 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia07 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia08 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia09 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia10 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia11 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia12 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia13 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia14 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  Secuencia secuencia15 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
+  
   Secuencia bordon00 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
   Secuencia bordon01 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
   Secuencia bordon02 =  new Secuencia(SecuenciaCompas.CORCHEA,90);
@@ -47,12 +65,30 @@ class SecuenciasLista
   SecuenciasLista ( )
   {
     crearSecuencias ( );
-    lista.add(bordon00);
-    lista.add(bordon01);
-    lista.add(bordon02);
-    lista.add(bordon03);
-    lista.add(bordon04);
-    lista.add(bordon05);
+    lista.add(secuenciaIntro01);
+    lista.add(secuenciaIntro02);
+    lista.add(secuencia01);
+    lista.add(secuencia02);
+    lista.add(secuencia03);
+    lista.add(secuencia04);
+    lista.add(secuencia05);
+    lista.add(secuencia06);
+    lista.add(secuencia07);
+    lista.add(secuencia08);
+    lista.add(secuencia09);
+    lista.add(secuencia10);
+    lista.add(secuencia11);
+    lista.add(secuencia12);
+    lista.add(secuencia13);
+    lista.add(secuencia14);
+    lista.add(secuencia15);
+    
+    //lista.add(bordon00);
+    //lista.add(bordon01);
+    //lista.add(bordon02);
+    //lista.add(bordon03);
+    //lista.add(bordon04);
+    //lista.add(bordon05);
     lista.add(bordon06);
     lista.add(bordon07);
     lista.add(bordon08);
@@ -96,6 +132,58 @@ class SecuenciasLista
   
   void crearSecuencias ( )
   {
+    //int [][] intro01 = {{DO5}, {}, {DO5}, {}, {DO5}};
+    int [][] intro01 = {{DO4}, {}, {RE4}, {}, {MI4}, {}, {FA4}, {}, {SOL4}, {}, {LA4}, {}, {SI4}, {}, {DO5}, {}, {RE5}, {}, {MI5}, {}, {FA5}, {}, {SOL5}, {}, {LA5}, {}, {SI5}, {}, {DO6}, {}, {RE6}};
+    secuenciaIntro01.melodia = intro01;
+    
+    int [][] intro02 = {{DO5}, {}, {SI4}, {}, {LA4}, {}, {SOL4}};
+    secuenciaIntro02.melodia = intro02;
+    
+    int [][] acordesSecuencia01 = {{DO5}, {}, {SOL4}, {}, {SOL4}, {}, {SI4}};
+    secuencia01.melodia = acordesSecuencia01;
+
+    int [][] acordesSecuencia02 = {{DO5}, {}, {SI4}, {}, {LA4}, {}, {SOL4}};
+    secuencia02.melodia = acordesSecuencia02;
+
+    int [][] acordesSecuencia03 = {{MI5}, {}, {FA5}, {}, {DO5}, {}, {SOL4}};
+    secuencia03.melodia = acordesSecuencia03;
+    
+    int [][] acordesSecuencia04 = {{RE4}, {}, {FA4}, {}, {FA4}, {}, {SOL4}};
+    secuencia04.melodia = acordesSecuencia04;
+    
+    int [][] acordesSecuencia05 = {{DO5}, {}, {DO4}, {}, {FA4}, {}, {FA4}};
+    secuencia05.melodia = acordesSecuencia05;
+
+    int [][] acordesSecuencia06 = {{SOL4}, {}, {RE5, SI4}, {}, {SOL4}, {}, {RE5, SI4}};
+    secuencia06.melodia = acordesSecuencia06;
+
+    int [][] acordesSecuencia07 = {{RE5}, {}, {RE5}, {}, {RE5}, {}, {DO5, LA4}};
+    secuencia07.melodia = acordesSecuencia07;
+
+    int [][] acordesSecuencia08 = {{DO4, LA4}, {}, {DO4, SOL4}, {}, {DO4, FA4}, {}, {DO4}};
+    secuencia08.melodia = acordesSecuencia08;
+    
+    int [][] acordesSecuencia09 = {{DO4, DO5}, {}, {SOL4, SOL5}, {}, {DO4, DO5}, {}, {DO4, DO5}};
+    secuencia09.melodia = acordesSecuencia09;
+
+    int [][] acordesSecuencia10 = {{SI4}, {}, {SOL4}, {}, {SOL4}, {}, {SI4}, {}, {SI4}, {}, {SI4}};
+    secuencia10.melodia = acordesSecuencia10;
+
+    int [][] acordesSecuencia11 = {{SOL4}, {}, {SI4}, {}, {SI4}, {}, {SOL4}, {}, {DO5}, {}, {DO5}};
+    secuencia11.melodia = acordesSecuencia11;
+    
+    int [][] acordesSecuencia12 = {{SOL4}, {}, {SI4}, {}, {RE5}, {}, {SOL5}, {}, {SOL5}, {}, {SOL5}, {}, {SOL4}, {}, {SI4}, {}, {RE5}, {}, {LA4}, {}, {LA4}, {}, {LA4}};
+    secuencia12.melodia = acordesSecuencia12;
+
+    int [][] acordesSecuencia13 = {{DO5, MI5}, {}, {DO5, MI5}, {}, {DO5, MI5}, {}, {MI5}, {}, {RE5}, {}, {DO5}, {}, {DO5, MI5}, {}, {}, {DO5, MI5}, {}, {DO5, MI5}, {}, {LA5}, {}, {SOL5}, {}, {FA5}};
+    secuencia13.melodia = acordesSecuencia13;
+    
+    int [][] acordesSecuencia14 = {{DO5, DO6}, {}, {DO5, RE6}, {}, {DO5, RE6}, {}, {RE5, SI5}, {}, {RE5, LA5}, {}, {SOL5}};
+    secuencia14.melodia = acordesSecuencia14;
+
+    int [][] acordesSecuencia15 = {{RE5}, {}, {RE6}, {}, {LA4}, {}, {DO5}, {}, {DO6}, {}, {SOL4}, {}, {MI5}, {SOL4, SOL5}, {}, {DO5, MI5}};
+    secuencia15.melodia = acordesSecuencia15;
+    
     int [][] acordesBordon00 = {{DO4}, {}, {RE4}, {}, {MI4}};
     bordon00.melodia = acordesBordon00;
 
