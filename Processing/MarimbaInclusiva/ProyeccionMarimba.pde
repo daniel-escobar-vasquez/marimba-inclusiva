@@ -1,4 +1,4 @@
-// Marimba Inclusiva //<>//
+// Marimba Inclusiva //<>// //<>// //<>//
 // Octubre 2016, Cartagena, Colombia
 // https://marimbainclusiva.wordpress.com/
 // https://github.com/marimba-inclusiva/marimba-inclusiva
@@ -17,6 +17,11 @@ class ProyeccionMarimba
   int valorTablaGolpeada;
   
   PFont fuente;
+  PFont fuenteMensaje;
+  PImage imagen;
+  PImage imagenMensaje;
+  String mensaje;
+  Iluminacion iluminacion;
   
   //CONSTRUCTOR DE LA CLASE
   ProyeccionMarimba ( Marimba marimba, Configuracion configuracion )
@@ -27,13 +32,19 @@ class ProyeccionMarimba
     
     utiles = new Utiles ( );
     fuente = loadFont ("Garamond-Bold-28.vlw");
-    textFont(fuente,28);
+    fuenteMensaje = loadFont ("ArialNarrow-BoldItalic-48.vlw");
+    textFont(fuenteMensaje,68);
+    
+    iluminacion = new Iluminacion ( );
   }
   
   //ESTE MÉTODO ES LLAMADO TODO EL TIEMPO
   //ES EL ENCARGADO DE DIBUJAR LOS ELEMENTOS DE LA PROYECCIÓN SEGÚN EL ESTADO DE LA PROYECCIÓN
   void actualizarProyeccion ( )
   { 
+    
+    iluminacion.dibujar ( );
+    
     switch ( estado )
     {
       case ProyeccionMarimbaEstados.INICIO:
@@ -62,6 +73,15 @@ class ProyeccionMarimba
           actualizarTablas ( );
           dibujarTablas ( );
       break;
+      
+      case ProyeccionMarimbaEstados.MOSTRAR_IMAGEN:
+        mostrarImagen ( );
+      break;
+      
+      case ProyeccionMarimbaEstados.MOSTRAR_MENSAJE:
+        mostrarMensaje ( );
+      break;
+      
     }
   }
   
@@ -90,9 +110,10 @@ class ProyeccionMarimba
     instruccionActual = instr;
     estado = ProyeccionMarimbaEstados.INSTRUCCION;
     instruccionActual.iniciar ( );
-    for(int i=1;i<=configuracion.numeroTablas;i++){
+    configurarTablas ( TablaEstados.INSTRUCCION , configuracion.colorInstruccion );
+    /*for(int i=1;i<=configuracion.numeroTablas;i++){
       configurarTabla(i,TablaEstados.PRESENTACION_SECUENCIA, marimba.arregloTablas[i-1].colorInactivo);
-    }
+    }*/
     seleccionRealizada = false;
   }
   
@@ -110,7 +131,7 @@ class ProyeccionMarimba
   //IR AL ESTADO PRESENTACIÓN SECUENCIA
   void irAModoPresentacionSecuencia ( )
   {
-    estado = ProyeccionMarimbaEstados.PRESENTACION_SECUENCIA; //<>//
+    estado = ProyeccionMarimbaEstados.PRESENTACION_SECUENCIA; //<>// //<>// //<>//
     for(int i=1;i<=configuracion.numeroTablas;i++){
       configurarTabla(i,TablaEstados.PRESENTACION_SECUENCIA, marimba.arregloTablas[i-1].colorInactivo);
     }
@@ -135,6 +156,21 @@ class ProyeccionMarimba
     estado = ProyeccionMarimbaEstados.CONFIGURACION_PROYECCION;
     configurarTablas ( TablaEstados.CONFIGURACION , configuracion.colorTablaConfiguracion );
   }
+  
+  //2017
+  void irAModoMostrarImagen ( PImage img )
+  {
+    imagen = img;
+    estado = ProyeccionMarimbaEstados.MOSTRAR_IMAGEN;
+  }
+  
+  void irAModoMostrarMensaje ( String msg , PImage img )
+  {
+    mensaje = msg;
+    imagenMensaje = img;
+    estado = ProyeccionMarimbaEstados.MOSTRAR_MENSAJE;
+  }
+  
   
   
   
@@ -172,11 +208,20 @@ class ProyeccionMarimba
               {
                 golpearTabla ( i + 1);
                 println ( "TABLA GOLPEADA CON MOUSE : " + ( i + 1 ) );
+                
+                OscMessage myMessage = new OscMessage("/tabla"); //se crea un nuevo mensaje del tipo OSC
+                myMessage.add(i+1);
+                oscP5.send(myMessage, pantalla2); // el mensaje es enviado a la dirección creada en el setup
+                
                }
             }
          break;
          
          case TablaEstados.GOLPEADA:
+           OscMessage myMessage = new OscMessage("/tabla"); //se crea un nuevo mensaje del tipo OSC
+                myMessage.add(i+1);
+                oscP5.send(myMessage, pantalla2); // el mensaje es enviado a la dirección creada en el setup
+                
            if ( marimba.arregloTablas [ i ].obtenerGolpeTerminado ( ) )
            {
              quitarGolpeaTabla ( i + 1 );
@@ -318,12 +363,62 @@ class ProyeccionMarimba
   //DIBUJAR UN MENSAJE EN LAS POSICIONES DE LAS TABLAS
   void dibujarInstruccion ( )
   {
+    
+      ////DIBUJAR TEXTO
+      textSize(45);
+      fill(30);
+      //fill (72,126,61);
+      textAlign(CENTER);
+      //SI LA INSTRUCCIÓN DEBE PARTIRSE EN VARIAS LÍNEAS
+      if ( instruccionActual.partirInstruccion )
+      {
+        String[] palabras = split ( instruccionActual.mensaje , ';');
+        
+        if ( palabras.length > 0 )
+        {
+          for ( int j = 0; j < palabras.length ; j ++ )
+          {
+            for ( int k = 0 ; k < palabras [ j ].length ( ) ; k++ )
+            {
+              if ( k < configuracion.numeroTablas )
+              {
+                int posx = configuracion.posXMarimba + marimba.arregloTablas [ k ].posX + 17 ;
+                int posy = configuracion.posYMarimba + marimba.arregloTablas [ k ].posY + int ( marimba.arregloTablas [ k ].alto * 0.5 +  (75 * j) - ( 35 * ( palabras.length - 1 ) )  ) + 5;
+                
+                text( palabras [ j ].charAt (k) , posx , posy );
+              }
+            }
+          }
+        }
+      }
+      
+      //SI LA INSTRUCCIÓN SE DIBUJA EN UNA SOLA LÍNEA
+      else
+      {  
+        for ( int i = 0 ; i < instruccionActual.mensaje.length ( ) ; i++ )
+        {
+          if ( i < configuracion.numeroTablas )
+          {
+            int posx = configuracion.posXMarimba + marimba.arregloTablas [ i ].posX +  17;
+            int posy = configuracion.posYMarimba + marimba.arregloTablas [ i ].posY + int ( marimba.arregloTablas [ i ].alto * 0.5 ) + 5;
+            
+            text( instruccionActual.mensaje.charAt(i) , posx , posy );
+          }
+        }
+      }
+      ///FIN DIBUJAR TEXTO
+    
+    
+    
       //Imagen de instrucción
       fill(0);
       PImage imgInst = instruccionActual.iconoInstruccion;
       if(imgInst!=null){
         fill(0);
-        image(imgInst, (int)(configuracion.posXMarimba+(configuracion.anchoMarimba*0.5)-(imgInst.width*0.5)), (int)(marimba.arregloTablas[0].posY + (configuracion.altoTablaGrande*0.44)), imgInst.width,imgInst.height);      
+        image(imgInst, (int)(configuracion.posXMarimba+(configuracion.anchoMarimba*0.5)-(imgInst.width*0.5)), (int)(marimba.arregloTablas[0].posY + (configuracion.altoTablaGrande*0.44)), imgInst.width,imgInst.height);
+        /*int marX = int ( (1280 - 1024) * 0.5);
+        int marY = int ( (720 - 606) * 0.5);
+        image(imgInst,   marX ,   marY );*/
       }
  
     //SI LA INSTRUCCIÓN TIENE OPCIONES DE SELECCIÓN
@@ -344,6 +439,44 @@ class ProyeccionMarimba
       }
     }
   }
+  
+  //2017
+  void mostrarImagen ( )
+  {
+    int marX = int ( (width - 1024) * 0.5);
+    int marY = int ( (height - 606) * 0.5);
+    image( imagen ,   marX ,   marY );
+  }
+  
+  void mostrarMensaje ( )
+  {
+    textSize(55);
+    textAlign(CENTER);
+    fill (255,255,255);
+    
+    int posX = int ( (width ) * 0.5);
+    int posY = int ( (height ) * 0.5);
+    //text( mensaje , posX , posY );
+    
+    String[] lineas = split ( mensaje , ';');
+      
+    if ( lineas.length > 0 )
+    {
+      for ( int j = 0; j < lineas.length ; j ++ )
+      {
+         text( lineas [ j ] , posX , posY + 58 * j - (58 * lineas.length ) );
+      }   
+    }
+    else
+    {
+      text( mensaje , posX , posY  );
+    }
+    
+    int marX = int ( (width - 400) * 0.5);
+    int marY = int ( (height - 430 ));
+    image( imagenMensaje ,   marX ,   marY );
+  }
+  
   
   //DIBUJAR LOS CONTROLES DEL MODO CONFIGURACIÓN
   void dibujarControles ( )

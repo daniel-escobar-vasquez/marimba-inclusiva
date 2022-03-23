@@ -1,6 +1,6 @@
-// Marimba Inclusiva //<>//
-// Octubre 2016, Cartagena, Colombia
-// https://marimbainclusiva.wordpress.com/
+// Marimba Inclusiva //<>// //<>// //<>//
+// Octubre 2017
+// https://www.facebook.com/marimbainclusiva/
 // https://github.com/marimba-inclusiva/marimba-inclusiva
 
 //Clase Acorde

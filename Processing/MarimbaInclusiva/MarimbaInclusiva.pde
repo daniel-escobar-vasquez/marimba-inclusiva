@@ -1,12 +1,18 @@
-// Marimba Inclusiva //<>//
-// Octubre 2016, Cartagena, Colombia
-// https://marimbainclusiva.wordpress.com/
+// Marimba Inclusiva
+// Octubre 2017
+// https://www.facebook.com/marimbainclusiva/
 // https://github.com/marimba-inclusiva/marimba-inclusiva
 
 import processing.serial.*;
-import beads.*;
+import processing.sound.*;
 import java.util.Arrays; 
 import java.util.Map;
+
+// INTEGRACIÓN A DOS PANTALLAS
+import oscP5.*;
+import netP5.*;
+OscP5 oscP5;
+NetAddress pantalla2; // envio a 
 
 int estado;
 int siguienteEstado;
@@ -16,6 +22,8 @@ Marimba marimba;
 Utiles utiles;
 ProyeccionMarimba proyeccionMarimba;
 DetectorMouse detectorMouse;
+ImagenesLista imagenesLista;
+MensajesLista mensajesLista;
 InstruccionesLista instruccionesLista;
 SecuenciasLista secuenciasLista;
 Secuenciador secuenciador;
@@ -28,9 +36,17 @@ boolean usarArduino = false; //Habilita conexion con Arduino
 
 void setup ( )
 {
+  
   size ( 1280 , 720 );
+  //fullScreen(P2D, 2);
   noStroke();
+  
+  // INTEGRACIÓN OSC PARA PANTALLA
+  oscP5 = new OscP5(this,12000);
+  pantalla2 = new NetAddress("127.0.0.1",12001); // a donde envio los datos
+  
   estado = MarimbaInclusivaEstados.INICIO; //Estado inicial
+  sonidos = new Sonidos ( this, 1.0 ); //1.0 = shaker derecho, -1.0 shaker izquierdo
 }
 
 void draw ( )
@@ -43,7 +59,8 @@ void draw ( )
 void correrEstados ( )
 {
   int golpe;
-  
+
+  OscMessage msgEstado = new OscMessage("/estado");
   switch ( estado )
   {
     case MarimbaInclusivaEstados.INICIO: //Inicializa todos los objetos y carga la configuración guardada en XML
@@ -52,16 +69,20 @@ void correrEstados ( )
       utiles = new Utiles ( );
       proyeccionMarimba = new ProyeccionMarimba ( marimba , configuracion );
       detectorMouse = new DetectorMouse ( configuracion.lapsoDesactivacionMouse );
+      imagenesLista = new ImagenesLista ( );
+      mensajesLista = new MensajesLista ( );
       instruccionesLista = new InstruccionesLista ( );
       secuenciasLista = configuracion.secuenciaManual? new SecuenciasLista(configuracion.listaSecuencias) : new SecuenciasLista();//Carga lista de secuencias manual o default
       secuenciador = new Secuenciador ( );
       secuenciaComparador = new SecuenciaComparador ( );
       arduino = new Arduino ( this, configuracion.puertoArduino , usarArduino );
-      sonidos = new Sonidos ( this );
+      ///sonidos = new Sonidos ( this );
       lapsoEspera = new LapsoEspera ( );
-      estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
       arduino.limpiarPuerto ( );
-      proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
+      
+      irAMensajePrincipal ( );
+      //estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
+      //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
 
     break;
     
@@ -81,15 +102,54 @@ void correrEstados ( )
       proyeccionMarimba.actualizarProyeccion ( );
       if ( !detectorMouse.obtenerActivacion ( )  && !simularMarimbaConMouse )
       {
-          estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
-          arduino.limpiarPuerto ( );
-          proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
+          irAMensajePrincipal ( );
+          //estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
+          //arduino.limpiarPuerto ( );
+          //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
       }
     break;
     
     case MarimbaInclusivaEstados.CONFIGURACION_TABLA:
     break;
-
+    
+    case MarimbaInclusivaEstados.IMAGEN_LOGO:
+      proyeccionMarimba.actualizarProyeccion ( );
+      if ( lapsoEspera.esperando )
+      {
+        if ( lapsoEspera.esperaTerminada ( ) )
+        {
+          irASeleccionarModo ( );
+        }
+      }
+    break;
+    
+    case MarimbaInclusivaEstados.MENSAJE_PRINCIPAL:
+      msgEstado.add(2);//INTRO - VIDEO
+      oscP5.send(msgEstado, pantalla2);
+      proyeccionMarimba.actualizarProyeccion ( );
+      if ( lapsoEspera.esperando )
+      {
+        if ( lapsoEspera.esperaTerminada ( ) )
+        {
+          //irASeleccionarModo ( );
+          irAImagenLogo ( );
+        }
+      }
+    break;
+    
+    case MarimbaInclusivaEstados.MENSAJE_SECUENCIA:
+      proyeccionMarimba.actualizarProyeccion ( );
+      if ( lapsoEspera.esperando )
+      {
+        if ( lapsoEspera.esperaTerminada ( ) )
+        {
+          irAInstruccionMemorizarSecuencia ( );
+          //irASeleccionarModo ( );
+          //irAImagenLogo ( );
+        }
+      }
+    break;
+    
     case MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO: //Estado inicial de proyeccion
       proyeccionMarimba.actualizarProyeccion ( );
       if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
@@ -101,6 +161,9 @@ void correrEstados ( )
     break;
     
     case MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO: //Estado de menu (seleccion modo libre-juego)
+      msgEstado.add(3);//SELECCIONAR_MODO
+      oscP5.send(msgEstado, pantalla2);
+    
       proyeccionMarimba.actualizarProyeccion ( );
       
       if ( lapsoEspera.esperando )
@@ -117,16 +180,26 @@ void correrEstados ( )
               
               case OpcionesSeleccion.JUEGO:
                 println ( "MODO JUEGO SELECCIONADO" );
-                estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
                 secuenciasLista.indiceLista = 0;
                 secuenciasLista.listaCompletada = false;
+                //estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
+                //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
+                irAInstruccionMemorizarSecuencia ( );
               break;
             }
         }
       }
       else
       {
+        if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
+        {
+            irAMensajePrincipal ( );
+            //estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
+            //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
+        }
+        else
+        {
+        
           golpe = arduino.leerPuerto ( );
           if ( golpe != 0 )
           {
@@ -156,10 +229,14 @@ void correrEstados ( )
               break;
             }
           }
+        }
       }
      break;
     
     case MarimbaInclusivaEstados.MODO_LIBRE: /*Estado de modo libre*/
+      msgEstado.add(4);//TOCAR_LIBRE
+      oscP5.send(msgEstado, pantalla2);
+    
       proyeccionMarimba.actualizarProyeccion ( );
       
       golpe = arduino.leerPuerto ( );
@@ -167,6 +244,7 @@ void correrEstados ( )
       {
         println("ARDUINO TABLA : " + golpe );
         proyeccionMarimba.golpearTabla ( golpe );
+        //sonidos.reproducirShaker(golpe);
         
         if ( simularMarimbaConMouse ) {
           detectorMouse.activarMouse ( );
@@ -199,13 +277,32 @@ void correrEstados ( )
     break;
     
     case MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA:
+      msgEstado.add(5);//MEMORIZA_SECUENCIA
+      oscP5.send(msgEstado, pantalla2);
       proyeccionMarimba.actualizarProyeccion ( );
       if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
       {
           proyeccionMarimba.irAModoPresentacionSecuencia ( );
-          estado = MarimbaInclusivaEstados.PRESENTACION_SECUENCIA;
-          secuenciador.definirSecuencia ( secuenciasLista.obtenerSecuencia ( ) );
-          println ( "MODO PRESENTACIÓN SECUENCIA" );
+          estado = MarimbaInclusivaEstados.PAUSA_INICIO_PRESENTACION_SECUENCIA;
+          lapsoEspera.iniciarEspera ( 700 );
+          //proyeccionMarimba.irAModoPresentacionSecuencia ( );
+          //estado = MarimbaInclusivaEstados.PRESENTACION_SECUENCIA;
+          //secuenciador.definirSecuencia ( secuenciasLista.obtenerSecuencia ( ) );
+          //println ( "MODO PRESENTACIÓN SECUENCIA" );
+      }
+    break;
+    
+    case MarimbaInclusivaEstados.PAUSA_INICIO_PRESENTACION_SECUENCIA:
+      proyeccionMarimba.actualizarProyeccion ( );
+      if ( lapsoEspera.esperando )
+      {
+        if ( lapsoEspera.esperaTerminada ( ) )
+        {
+          irAModoPresentacionSecuencia ( );
+          //irAInstruccionMemorizarSecuencia ( );
+          //irASeleccionarModo ( );
+          //irAImagenLogo ( );
+        }
       }
     break;
     
@@ -234,8 +331,9 @@ void correrEstados ( )
             {
               case OpcionesSeleccion.INTENTAR:
                 println ( "SELECCIÓN INTENTAR DE NUEVO" );
-                estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
-                proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
+                irAInstruccionMemorizarSecuencia ( );
+                //estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
+                //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
               break;
               
               case OpcionesSeleccion.SALIR:
@@ -251,8 +349,9 @@ void correrEstados ( )
       {
         if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
         {
-           estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-            proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
+          irAMensajePrincipal ( );
+           //estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
+           // proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
         }
         
         else
@@ -328,8 +427,9 @@ void correrEstados ( )
           {
             case OpcionesSeleccion.REPETIR:
               println ( "SELECCIÓN REPETIR SECUENCIA" );
-              estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
-              proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
+              irAInstruccionMemorizarSecuencia ( );
+              //estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
+              //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
             break;
             
             case OpcionesSeleccion.CONTINUAR:
@@ -364,8 +464,10 @@ void correrEstados ( )
       proyeccionMarimba.actualizarProyeccion ( );
       if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
       {
-        estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
-        proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
+        //irAInstruccionMemorizarSecuencia ( );
+        irAMensajeSecuencia ( );
+        //estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
+        //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
       }
     break;
     
@@ -376,8 +478,9 @@ void correrEstados ( )
       proyeccionMarimba.actualizarProyeccion ( );
       if ( proyeccionMarimba.instruccionActual.verificarFinalEspera ( ) )
       {
-        estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-        proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
+        irAMensajePrincipal ( );
+        //estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
+        //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
       }
     break;
     
@@ -403,7 +506,7 @@ void correrEstados ( )
           
           if(usarArduino){
             println("Escribe Serial Arduino");
-            arduino.escribirPuerto();
+            //arduino.escribirPuerto();
           }
           sonidos.reproducirAcorde ( acorde );
         }
@@ -419,6 +522,8 @@ void correrEstados ( )
       {
         if ( lapsoEspera.esperaTerminada ( ) )
         {
+          msgEstado.add(7);//SECUENCIA_LOGRADA
+          oscP5.send(msgEstado, pantalla2);
           println ( "LAPSO ESPERA TERMINADA" );
           estado = MarimbaInclusivaEstados.INSTRUCCION_SECUENCIA_LOGRADA;
           proyeccionMarimba.irAModoResultado ( instruccionesLista.instruccionSecuenciaLograda );
@@ -462,6 +567,8 @@ void correrEstados ( )
           else
           {
             println ( "GOLPE FALLADO" );
+            msgEstado.add(6);//INTENTAR_NUEVAMENTE
+            oscP5.send(msgEstado, pantalla2);
             secuenciaComparador.secuenciaFallada = true;
             estado = MarimbaInclusivaEstados.INSTRUCCION_INTENTAR_NUEVAMENTE_O_TERMINAR;
             arduino.limpiarPuerto ( );
@@ -479,9 +586,65 @@ void correrEstados ( )
 
 void keyPressed(){ //Tecla Q/q de reinicio
   if (key == 'q' || key == 'Q') {
-        estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
-        proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
+    
+    irAMensajePrincipal ( );
+    //estado = MarimbaInclusivaEstados.INSTRUCCION_NOMBRE_PROYECTO;
+    //proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionNombreProyecto );
   }
+}
+
+void irAImagenLogo ( )
+{
+    println ( "IMAGEN LOGO" );
+    proyeccionMarimba.irAModoMostrarImagen ( imagenesLista.imgLogo );
+    estado = MarimbaInclusivaEstados.IMAGEN_LOGO;
+    lapsoEspera.iniciarEspera ( 2000 );
+}
+
+void irAMensajePrincipal ( )
+{
+    println ( "MENSAJE PRINCIPAL" );
+    estado = MarimbaInclusivaEstados.MENSAJE_PRINCIPAL;
+    //proyeccionMarimba.irAModoMostrarMensaje ( mensajesLista.mensajePrincipal , imagenesLista.imgLogoPeq );
+    proyeccionMarimba.irAModoMostrarMensaje ( "www.marimbainclusiva.com" , imagenesLista.imgLogoPeq );
+    lapsoEspera.iniciarEspera ( 2000 );
+}
+
+void irAMensajeSecuencia ( )
+{
+  OscMessage msgEstado = new OscMessage("/estado");
+  msgEstado.add(1);//INICIO
+  oscP5.send(msgEstado, pantalla2);
+  println ( "MENSAJE DE SECUENCIA" );
+  estado = MarimbaInclusivaEstados.MENSAJE_SECUENCIA;
+  //proyeccionMarimba.irAModoMostrarMensaje ( mensajesLista.obtenerMensaje ( ) , imagenesLista.imgLogoPeq );
+  proyeccionMarimba.irAModoMostrarMensaje ( "www.marimbainclusiva.com" , imagenesLista.imgLogoPeq );
+  lapsoEspera.iniciarEspera ( 2500 );
+}
+
+void irASeleccionarModo ( )
+{
+  println ( "INSTRUCCIÓN DE SELECCIONAR MODO" );
+  estado = MarimbaInclusivaEstados.INSTRUCCION_SELECCIONAR_MODO;
+  arduino.limpiarPuerto ( );
+  //lapsoEspera.iniciarEspera ( 4500 );
+  proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionSeleccionarModo );
+  
+}
+
+void irAInstruccionMemorizarSecuencia ( )
+{
+  println ( "INSTRUCCIÓN DE MEMORIZAR SECUENCIA" );
+  estado = MarimbaInclusivaEstados.INSTRUCCION_MEMORIZA_SECUENCIA;
+  proyeccionMarimba.irAModoInstruccion ( instruccionesLista.instruccionMemorizarSecuencia );
+}
+
+void irAModoPresentacionSecuencia ( )
+{
+  proyeccionMarimba.irAModoPresentacionSecuencia ( );
+  estado = MarimbaInclusivaEstados.PRESENTACION_SECUENCIA;
+  secuenciador.definirSecuencia ( secuenciasLista.obtenerSecuencia ( ) );
+  println ( "MODO PRESENTACIÓN SECUENCIA" );
 }
 
 void mouseMoved()

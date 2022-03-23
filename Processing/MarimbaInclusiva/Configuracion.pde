@@ -1,4 +1,4 @@
-// Marimba Inclusiva //<>//
+// Marimba Inclusiva //<>// //<>// //<>// //<>//
 // Octubre 2016, Cartagena, Colombia
 // https://marimbainclusiva.wordpress.com/
 // https://github.com/marimba-inclusiva/marimba-inclusiva
@@ -52,9 +52,9 @@ class Configuracion
   void cargarConfiguracion ( )
   {
     /*Lectura de tablas*/
-    XML[] confXML = xmlConfiguracion.getChildren("parametros"); //<>//
-     //<>//
-    this.lapsoDesactivacionMouse = confXML[0].getChild("lapsoDesactivacionMouse").getIntContent(5000); //<>//
+    XML[] confXML = xmlConfiguracion.getChildren("parametros"); //<>// //<>// //<>// //<>//
+     //<>// //<>// //<>// //<>//
+    this.lapsoDesactivacionMouse = confXML[0].getChild("lapsoDesactivacionMouse").getIntContent(5000); //<>// //<>// //<>// //<>//
     this.numeroTablas = confXML[0].getChild("numeroTablas").getIntContent(16);
     this.anchoPantalla = confXML[0].getChild("anchoPantalla").getIntContent(1280);
     this.altoPantalla = confXML[0].getChild("altoPantalla").getIntContent(720);
